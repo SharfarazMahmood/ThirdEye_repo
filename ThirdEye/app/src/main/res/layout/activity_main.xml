@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="20dp"
+    android:background="@color/backgroundMainColor"
+    android:orientation="vertical"
+    tools:context=".MainActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="347dp"
+                android:src="@drawable/app_logo_name"></ImageView>
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_marginTop="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginLeft="20dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/sign_in"
+                android:textSize="25sp"
+                android:textStyle="bold"
+                android:layout_marginTop="6dp"
+                android:textColor="@android:color/holo_blue_dark"/>
+
+            <ImageView
+                android:src="@drawable/ic_baseline_account_box_24"
+                android:layout_alignParentRight="true"
+                android:layout_width="62dp"
+                android:layout_height="62dp">
+            </ImageView>
+
+        </RelativeLayout>
+
+        <EditText
+            android:layout_marginRight="20dp"
+            android:layout_marginLeft="20dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/signInEmailEditTextId"
+            android:hint="Email"
+            android:textColorHint="@color/ItemTextColor"
+            android:inputType="textEmailAddress"
+            android:textColor="@color/defaultTextColor"
+            />
+
+        <EditText
+            android:layout_marginTop="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginLeft="20dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/signInPasswordEditTextId"
+            android:hint="Password"
+            android:textColorHint="@color/ItemTextColor"
+            android:inputType="textPassword"
+            android:textColor="@color/defaultTextColor"
+            />
+
+        <Button
+            android:layout_marginTop="20dp"
+            android:id="@+id/signInButtonId"
+            android:layout_gravity="center"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Enter"
+            android:textSize="20sp"
+            android:textColor="@color/cardview_dark_background"
+            android:textStyle="bold"
+            />
+
+        <TextView
+            android:layout_marginTop="20dp"
+            android:id="@+id/haveNotSignedUpTextId"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/have_not_signed_up_text"
+            android:textSize="18sp"
+            android:layout_gravity="center"
+            />
+
+        <ProgressBar
+            android:visibility="gone"
+            android:layout_gravity="center_horizontal"
+            android:id="@+id/signInProgressBarId"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+
+    </LinearLayout>
+
+
+</ScrollView>
+
+
+
+<!--  comments
+
+
+
+
+
+-->
+

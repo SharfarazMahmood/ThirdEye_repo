@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">Third Eye</string>
+    <string name="app_description_one_line">A video based helping aid</string>
+    <string name="sign_up">Sign up</string>
+    <string name="camera">Camera</string>
+    <string name="activity_list">Activity List</string>
+    <string name="notifications">Notifications</string>
+    <string name="settings">Settings</string>
+    <string name="sign_out">Sign out</string>
+    <string name="profile">Profile</string>
+    <string name="already_signed_up_text">Already signed up? Sign In</string>
+    <string name="sign_in">Sign in</string>
+    <string name="have_not_signed_up_text">Have not signed up? Sign UP</string>
+</resources>

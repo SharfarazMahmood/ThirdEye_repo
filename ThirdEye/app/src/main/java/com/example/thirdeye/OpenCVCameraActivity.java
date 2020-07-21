@@ -37,40 +37,6 @@ import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 
 public class OpenCVCameraActivity extends AppCompatActivity implements  CameraBridgeViewBase.CvCameraViewListener2{
-    ///////// tensorflow lite interpreter variables ------------
-    EditText inputNumber;
-    Button inferButton;
-    TextView outputNumer;
-    Interpreter tflite;
-    ///////// tensorflow lite interpreter variables ENDED
-
-    ///////// openCV java camera frame capture---- variables
-    private int fileNum = 0;
-    Boolean bool = null;
-    SimpleDateFormat sdf  = new java.text.SimpleDateFormat("MM-dd_HH-mm-ss");;
-    JavaCameraView openCVCamView;
-    Mat mRGBA , mRGBAT;
-    BaseLoaderCallback baseLoaderCallback = new BaseLoaderCallback() {
-        @Override
-        public void onManagerConnected(int status) {
-            switch (status){
-                case BaseLoaderCallback.SUCCESS:
-                {
-                    openCVCamView.enableView();
-                    break;
-                }
-                default:
-                {
-                    super.onManagerConnected(status);
-                    break;
-                }
-            }
-        }
-    };
-    ///////// openCV java camera frame capture---- variables ENDED
-
-
-
     ///////Checking?Asking for camera permission------------------
     private static final String[] PERMISSIONS = {
             Manifest.permission.CAMERA,
@@ -111,6 +77,67 @@ public class OpenCVCameraActivity extends AppCompatActivity implements  CameraBr
     }
     ///////Checking?Asking for camera permission ENDED------------------
 
+    ///////// tensorflow lite interpreter variables ------------
+    EditText inputNumber;
+    Button inferButton;
+    TextView outputNumer;
+    Interpreter tflite;
+    ///////// tensorflow lite interpreter variables ENDED
+    //////////////////////////////////////////
+    /////////tflite model loader//////////////
+    private MappedByteBuffer loadModelFile() throws IOException{
+        //////////loading the tflite model from assets folder
+        AssetFileDescriptor fileDescriptor = this.getAssets().openFd("linear_model.tflite");
+        FileInputStream inputStream = new FileInputStream(fileDescriptor.getFileDescriptor());
+        FileChannel fileChannel = inputStream.getChannel();
+        long startOffset = fileDescriptor.getStartOffset();
+        long declaredlength = fileDescriptor.getDeclaredLength();
+
+        return fileChannel.map(FileChannel.MapMode.READ_ONLY, startOffset, declaredlength);
+    }
+
+    /////////////////////////////////////////////////////////////////
+    //////// method to do inference using the tflite model///////////
+    private float doInference(String inputString) {
+        ///////input shape id [1]
+        float[] inputVal = new float[1];
+        inputVal[0] = Float.valueOf(inputString);
+
+        //////output shape is [1][1]
+        float[][] outputVal = new float[1][1];
+        ///Run inference passing the input shape and getting the output shape
+        tflite.run(inputVal , outputVal);
+
+        float inferredValue = outputVal[0][0];
+
+        return inferredValue;
+    }
+
+
+    ///////// openCV java camera frame capture---- variables
+    private int fileNum = 0;
+    Boolean bool = null;
+    SimpleDateFormat sdf  = new java.text.SimpleDateFormat("MM-dd_HH-mm-ss");;
+    JavaCameraView openCVCamView;
+    Mat mRGBA , mRGBAT;
+    BaseLoaderCallback baseLoaderCallback = new BaseLoaderCallback() {
+        @Override
+        public void onManagerConnected(int status) {
+            switch (status){
+                case BaseLoaderCallback.SUCCESS:
+                {
+                    openCVCamView.enableView();
+                    break;
+                }
+                default:
+                {
+                    super.onManagerConnected(status);
+                    break;
+                }
+            }
+        }
+    };
+    ///////// openCV java camera frame capture---- variables ENDED
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -146,35 +173,7 @@ public class OpenCVCameraActivity extends AppCompatActivity implements  CameraBr
         //////////////////
     }
 
-    //////////////////////////////////////////
-    /////////tflite model loader//////////////
-    private MappedByteBuffer loadModelFile() throws IOException{
-        //////////loading the tflite model from assets folder
-        AssetFileDescriptor fileDescriptor = this.getAssets().openFd("linear_model.tflite");
-        FileInputStream inputStream = new FileInputStream(fileDescriptor.getFileDescriptor());
-        FileChannel fileChannel = inputStream.getChannel();
-        long startOffset = fileDescriptor.getStartOffset();
-        long declaredlength = fileDescriptor.getDeclaredLength();
 
-        return fileChannel.map(FileChannel.MapMode.READ_ONLY, startOffset, declaredlength);
-    }
-
-    /////////////////////////////////////////////////////////////////
-    //////// method to do inference using the tflite model///////////
-    private float doInference(String inputString) {
-        ///////input shape id [1]
-        float[] inputVal = new float[1];
-        inputVal[0] = Float.valueOf(inputString);
-
-        //////output shape is [1][1]
-        float[][] outputVal = new float[1][1];
-        ///Run inference passing the input shape and getting the output shape
-        tflite.run(inputVal , outputVal);
-
-        float inferredValue = outputVal[0][0];
-
-        return inferredValue;
-    }
 
     //////////////////////////////////////////
     ////////////opencv camera view ///////////

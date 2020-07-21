@@ -37,15 +37,12 @@ import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 
 public class OpenCVCameraActivity extends AppCompatActivity implements  CameraBridgeViewBase.CvCameraViewListener2{
-    private static String TAG = "OpenCVCameraActivity";
-
-    ///////// tensorflow lite interpreter -------- variables
+    ///////// tensorflow lite interpreter variables ------------
     EditText inputNumber;
     Button inferButton;
     TextView outputNumer;
     Interpreter tflite;
-    ///////// tensorflow lite interpreter -------- variables ENDED
-
+    ///////// tensorflow lite interpreter variables ENDED
 
     ///////// openCV java camera frame capture---- variables
     private int fileNum = 0;
@@ -98,7 +95,6 @@ public class OpenCVCameraActivity extends AppCompatActivity implements  CameraBr
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-
         if( requestCode == REQUEST_PERMISSIONS && grantResults.length > 0){
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 if( arePermisionsDenied() ){
@@ -180,9 +176,6 @@ public class OpenCVCameraActivity extends AppCompatActivity implements  CameraBr
         return inferredValue;
     }
 
-
-
-
     //////////////////////////////////////////
     ////////////opencv camera view ///////////
     @Override
@@ -211,10 +204,8 @@ public class OpenCVCameraActivity extends AppCompatActivity implements  CameraBr
         File file = new File(path, filename);
         filename = file.toString();
 
-
-            ///////// comment/uncomment next line to save/not save image-----------########
+///////// comment/uncomment next line to save/not save image-----------########
         Imgcodecs.imwrite(filename, mRGBAT);
-
 
 //        bool = Imgcodecs.imwrite(filename, mRGBAT);
 //        if( bool == true){
@@ -253,7 +244,6 @@ public class OpenCVCameraActivity extends AppCompatActivity implements  CameraBr
     @Override
     protected void onResume() {
         super.onResume();
-
         if (OpenCVLoader.initDebug()) {
 //            Log.e(TAG, "opencv ok");
             baseLoaderCallback.onManagerConnected(BaseLoaderCallback.SUCCESS);
@@ -266,6 +256,5 @@ public class OpenCVCameraActivity extends AppCompatActivity implements  CameraBr
             requestPermissions(PERMISSIONS, REQUEST_PERMISSIONS);
             return;
         }
-
     }
 }

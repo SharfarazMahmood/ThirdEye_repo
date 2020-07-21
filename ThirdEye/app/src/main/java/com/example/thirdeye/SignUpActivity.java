@@ -6,7 +6,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -50,9 +49,7 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
     public void onClick(View view) {
         switch (view.getId()){
             case R.id.signUpButtonId:
-
                 newUserRegister();
-
                 break;
             case R.id.alreadySignedUpTextId:
                 Intent intent_haveNotSignedUp  = new Intent(getApplicationContext(), MainActivity.class);
@@ -95,7 +92,6 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
 
         mAuth.createUserWithEmailAndPassword(newUserEmail, newUserPassword).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
             @Override
-
             public void onComplete(@NonNull Task<AuthResult> task) {
                 signUpProgressBar.setVisibility(View.GONE);
                 if (task.isSuccessful()) {
@@ -105,19 +101,14 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
                     intent_registration_success.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     startActivity(intent_registration_success);
                     finish();
-
                 } else {
                     if(task.getException() instanceof FirebaseAuthUserCollisionException){
                         Toast.makeText(getApplicationContext(), "User already Exists" , Toast.LENGTH_LONG  ).show();
                     }else{
                         Toast.makeText(getApplicationContext(), "Error : "+task.getException().getMessage() , Toast.LENGTH_LONG  ).show();
                     }
-                    // If sign in fails, display a message to the user.
                 }
             }
         });
-
-
-
     }
 }

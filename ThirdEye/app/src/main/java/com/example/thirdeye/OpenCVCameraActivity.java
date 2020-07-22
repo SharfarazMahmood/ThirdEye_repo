@@ -227,22 +227,21 @@ public class OpenCVCameraActivity extends AppCompatActivity implements  CameraBr
     }
     */
 
-    /** Classifies a frame from the preview stream. */
+    /** Classifies an Image from the storage. */
     String getImageFeature(Bitmap bitmap) {
         if (tflite == null) {
             Log.e(TAG, "Image classifier has not been initialized; Skipped.");
             return "Uninitialized Classifier.";
         }
-        //Log.e(TAG, "getImageFeature() >>>>>>> Image bitmap to byte conversion startig");
+//        Log.e(TAG, "getImageFeature() >>>>>>> Image bitmap to byte conversion startig");
         convertBitmapToByteBuffer(bitmap);
         //Here's where the magic happens!!!
         long startTime = SystemClock.uptimeMillis();
-        Log.e(TAG, "getImageFeature() >>>>>>> input image bytebuffer in the tflite model");
+//        Log.e(TAG, "getImageFeature() >>>>>>> input image bytebuffer in the tflite model");
         tflite.run(imgData, imgFeatureSetArray);
         long endTime = SystemClock.uptimeMillis();
         Log.d(TAG, "Timecost to run model inference: " + Long.toString(endTime - startTime));
         Log.d(TAG,  Arrays.deepToString(imgFeatureSetArray));
-
         Log.d(TAG, "print done " );
         // print the results
         String timetextToShow = Long.toString(endTime - startTime) + "ms";
@@ -258,7 +257,7 @@ public class OpenCVCameraActivity extends AppCompatActivity implements  CameraBr
         imgData.rewind();
         bitmap.getPixels(intValues, 0, bitmap.getWidth(), 0, 0, bitmap.getWidth(), bitmap.getHeight());
 
-        Log.d(TAG, " \"convertBitmapToByteBuffer() >>> bitmap to byte float ");
+//        Log.d(TAG, " \"convertBitmapToByteBuffer() >>> bitmap to byte float ");
         // Convert the image to floating point.
         int pixel = 0;
         long startTime = SystemClock.uptimeMillis();

@@ -2,7 +2,6 @@ package com.example.thirdeye;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.cardview.widget.CardView;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -22,7 +21,6 @@ import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseUser;
 
 import org.opencv.android.OpenCVLoader;
-import org.w3c.dom.Text;
 
 import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
 
@@ -56,7 +54,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mUser = mAuth.getCurrentUser();
 
         if(mUser != null){
-
             Intent intent_current_user_homeActivity = new Intent(getApplicationContext() , HomePageActivity.class);
             intent_current_user_homeActivity.addFlags(FLAG_ACTIVITY_NEW_TASK);
 
@@ -71,10 +68,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         signInProgressBar = findViewById(R.id.signInProgressBarId);
 
-
         signInButton.setOnClickListener(this);
         haveNotSignUpTextView.setOnClickListener(this);
-
     }
 
     @Override
@@ -119,13 +114,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         signInProgressBar.setVisibility(View.VISIBLE);
 
-
         mAuth.signInWithEmailAndPassword(existingUserEmail, existingUserPassword).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
-
                 signInProgressBar.setVisibility(View.GONE);
-
                 if (task.isSuccessful()) {
                     // Sign in success, update UI with the signed-in user's information
                     Toast.makeText(getApplicationContext(), "Log in Successfull", Toast.LENGTH_LONG  ).show();
@@ -134,15 +126,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     startActivity(intent_log_in_success);
                     //////to destroy the main activity use finish()
                     finish();
-
                 } else {
                     Toast.makeText(getApplicationContext(), "Log in failed : Check Email/Password  " , Toast.LENGTH_LONG  ).show();
                     // If sign in fails, display a message to the user.
                 }
             }
-
         });
-
-
     }
 }

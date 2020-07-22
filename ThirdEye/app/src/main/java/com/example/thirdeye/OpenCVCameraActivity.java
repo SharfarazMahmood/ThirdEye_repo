@@ -99,8 +99,7 @@ public class OpenCVCameraActivity extends AppCompatActivity implements  CameraBr
     };
     ///////// openCV java camera frame capture---- variables ENDED
 
-
-
+    //////////////////////////////////////////////////////////////
     ///////Checking?Asking for camera permission------------------
     private static final String[] PERMISSIONS = {
             Manifest.permission.CAMERA,
@@ -158,7 +157,6 @@ public class OpenCVCameraActivity extends AppCompatActivity implements  CameraBr
 //        outputNumer = (TextView) findViewById(R.id.outputNumberID);
         inferButton = (Button) findViewById(R.id.inferButtonID);
         imageView = (ImageView) findViewById(R.id.imageViewId);
-
 
         //////create the tflite object
         try {
@@ -306,11 +304,8 @@ public class OpenCVCameraActivity extends AppCompatActivity implements  CameraBr
         File file = new File(path, filename);
         filename = file.toString();
 
-
             ///////// comment/uncomment next line to save/not save image-----------########
         Imgcodecs.imwrite(filename, mRGBAT);
-
-
 //        bool = Imgcodecs.imwrite(filename, mRGBAT);
 //        if( bool == true){
 //            Log.e("Imwrite" , "saved in "+filename );

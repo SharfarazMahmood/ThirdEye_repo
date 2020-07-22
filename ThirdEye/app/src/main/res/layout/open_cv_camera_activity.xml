@@ -17,7 +17,7 @@
                     android:id="@+id/openCVCamViewID"
                     android:layout_width="fill_parent"
                     android:layout_height="450dp"/>
-
+<!--
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -27,21 +27,28 @@
                     android:id="@+id/inputNumberID"
                     android:layout_width="80dp"
                     android:layout_height="wrap_content"/>
+-->
                 <Button
                     android:id="@+id/inferButtonID"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="inference"/>
-                <TextView
+                <ImageView
+                    android:id="@+id/imageViewId"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Predicted value:"
-                    android:textSize="20sp"/>
-                <TextView
-                    android:id="@+id/outputNumberID"
-                    android:layout_width="80dp"
                     android:layout_height="wrap_content"/>
 
+                <!--
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Predicted value:"
+                                    android:textSize="20sp"/>
+                                <TextView
+                                    android:id="@+id/outputNumberID"
+                                    android:layout_width="80dp"
+                                    android:layout_height="wrap_content"/>
+                -->
 
 
             </LinearLayout>

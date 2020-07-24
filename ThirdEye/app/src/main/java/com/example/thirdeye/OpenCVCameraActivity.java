@@ -7,20 +7,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.content.res.AssetFileDescriptor;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.SystemClock;
+import android.os.Handler;
+import android.os.HandlerThread;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.TextView;
-
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.CameraBridgeViewBase;
 import org.opencv.android.JavaCameraView;
@@ -30,48 +23,26 @@ import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
-import org.tensorflow.lite.Interpreter;
 
 import java.io.File;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Date;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.nio.MappedByteBuffer;
-import java.nio.channels.FileChannel;
 
 public class OpenCVCameraActivity extends AppCompatActivity implements  CameraBridgeViewBase.CvCameraViewListener2{
     private static String TAG = "OpenCVCameraActivity";
 
-    ///////// tensorflow lite interpreter -------- variables
-//    private EditText inputNumber;
-//    private TextView outputNumer;
-    private Button inferButton;
-    private ImageView imageView;
+    ////// activity classifire variable
+    private final Object lock = new Object();
+    //    private boolean runClassifier = false;
+    private boolean runClassifier = false;
+    private ActivityClassifier classifier = null;
+    //private static boolean classifierCreated = false;
 
-    private Interpreter tflite;
-
-    /** Dimensions of inputs. */
-    private static final int DIM_BATCH_SIZE = 1;
-    private static final int DIM_PIXEL_SIZE = 3;
-    static final int DIM_IMG_SIZE_X = 224;
-    static final int DIM_IMG_SIZE_Y = 224;
-
-    private static final int IMAGE_MEAN = 128;
-    private static final float IMAGE_STD = 128.0f;
-    /* Preallocated buffers for storing image data in. */
-    private int[] intValues = new int[DIM_IMG_SIZE_X * DIM_IMG_SIZE_Y];
-    /** A ByteBuffer to hold image data, to be feed into Tensorflow Lite as inputs. */
-    private ByteBuffer imgData = null;
-
-    /** An array to hold inference results, to be feed into Tensorflow Lite as outputs. */
-    private float[][][][] imgFeatureSetArray = new float[DIM_BATCH_SIZE][7][7][1280];
-
-    private static Bitmap bitmap = null;
-    ///////// tensorflow lite interpreter -------- variables ENDED
+    /** An additional thread for running tasks that shouldn't block the UI. */
+    private HandlerThread backgroundThread;
+    /** A {@link Handler} for running tasks in the background. */
+    private Handler backgroundHandler;
+    private static final String HANDLE_THREAD_NAME = "OpenCVActivityClassifyBackground";
 
 
     ///////// openCV java camera frame capture---- variables
@@ -151,129 +122,8 @@ public class OpenCVCameraActivity extends AppCompatActivity implements  CameraBr
         openCVCamView.setVisibility(View.VISIBLE);
         openCVCamView.setCvCameraViewListener( this);
 
-        //////////////////////////////////////////
-        ////////taking input for the model/////////
-//        inputNumber = (EditText) findViewById(R.id.inputNumberID);
-//        outputNumer = (TextView) findViewById(R.id.outputNumberID);
-        inferButton = (Button) findViewById(R.id.inferButtonID);
-        imageView = (ImageView) findViewById(R.id.imageViewId);
-
-        //////create the tflite object
-        try {
-            tflite = new Interpreter(loadModelFile());
-            imgData =
-                    ByteBuffer.allocateDirect(
-                            4 * DIM_BATCH_SIZE * DIM_IMG_SIZE_X * DIM_IMG_SIZE_Y * DIM_PIXEL_SIZE);
-            imgData.order(ByteOrder.nativeOrder());
-            Log.d(TAG, "Created a Tensorflow Lite Image Classifier.");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        //////do inference
-        inferButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                /*
-                //////////////////////////////////////////
-                ////////pass input for the model/////////
-                float prediction = doInference(inputNumber.getText().toString());
-                outputNumer.setText(Float.toString(prediction));
-                */
-                String fileName = "/storage/emulated/0/Pictures/ThirdEye/img_1.jpeg";
-                File file = new File(fileName);
-                bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
-                /////////creating a scaled bitmap from the image file
-                bitmap = Bitmap.createScaledBitmap(bitmap, 224, 224, true);
-                imageView.setImageBitmap(bitmap);
-                getImageFeature(bitmap );
-            }
-        });
+        startBackgroundThread();
     }
-    /** Closes tflite to release resources. */
-    public void close() {
-        tflite.close();
-        tflite = null;
-    }
-
-    //////////////////////////////////////////
-    /////////tflite model loader//////////////
-    private MappedByteBuffer loadModelFile() throws IOException{
-        //////////loading the tflite model from assets folder
-        AssetFileDescriptor fileDescriptor = this.getAssets().openFd("mobilenet_with_preprocessing.tflite");
-        FileInputStream inputStream = new FileInputStream(fileDescriptor.getFileDescriptor());
-        FileChannel fileChannel = inputStream.getChannel();
-        long startOffset = fileDescriptor.getStartOffset();
-        long declaredlength = fileDescriptor.getDeclaredLength();
-
-        return fileChannel.map(FileChannel.MapMode.READ_ONLY, startOffset, declaredlength);
-    }
-
-    /*
-    /////////////////////////////////////////////////////////////////
-    //////// method to do inference using the tflite model///////////
-    private float doInference(String inputString) {
-        ///////input shape id [1]
-        float[] inputVal = new float[1];
-        inputVal[0] = Float.valueOf(inputString);
-
-        //////output shape is [1][1]
-        float[][] outputVal = new float[1][1];
-        ///Run inference passing the input shape and getting the output shape
-        tflite.run(inputVal , outputVal);
-
-        float inferredValue = outputVal[0][0];
-
-        return inferredValue;
-    }
-    */
-
-    /** Classifies an Image from the storage. */
-    String getImageFeature(Bitmap bitmap) {
-        if (tflite == null) {
-            Log.e(TAG, "Image classifier has not been initialized; Skipped.");
-            return "Uninitialized Classifier.";
-        }
-//        Log.e(TAG, "getImageFeature() >>>>>>> Image bitmap to byte conversion startig");
-        convertBitmapToByteBuffer(bitmap);
-        //Here's where the magic happens!!!
-        long startTime = SystemClock.uptimeMillis();
-//        Log.e(TAG, "getImageFeature() >>>>>>> input image bytebuffer in the tflite model");
-        tflite.run(imgData, imgFeatureSetArray);
-        long endTime = SystemClock.uptimeMillis();
-        Log.d(TAG, "Timecost to run model inference: " + Long.toString(endTime - startTime));
-        Log.d(TAG,  Arrays.deepToString(imgFeatureSetArray));
-        Log.d(TAG, "print done " );
-        // print the results
-        String timetextToShow = Long.toString(endTime - startTime) + "ms";
-        return timetextToShow;
-    }
-
-    /** Writes Image data into a {@code ByteBuffer}. */
-    private void convertBitmapToByteBuffer(Bitmap bitmap) {
-        if (imgData == null) {
-            Log.d(TAG, " \"convertBitmapToByteBuffer() >>> imgData variable is null\" ");
-            return;
-        }
-        imgData.rewind();
-        bitmap.getPixels(intValues, 0, bitmap.getWidth(), 0, 0, bitmap.getWidth(), bitmap.getHeight());
-
-//        Log.d(TAG, " \"convertBitmapToByteBuffer() >>> bitmap to byte float ");
-        // Convert the image to floating point.
-        int pixel = 0;
-        long startTime = SystemClock.uptimeMillis();
-        for (int i = 0; i < DIM_IMG_SIZE_X; ++i) {
-            for (int j = 0; j < DIM_IMG_SIZE_Y; ++j) {
-                final int val = intValues[pixel++];
-                imgData.putFloat((((val >> 16) & 0xFF)-IMAGE_MEAN)/IMAGE_STD);
-                imgData.putFloat((((val >> 8) & 0xFF)-IMAGE_MEAN)/IMAGE_STD);
-                imgData.putFloat((((val) & 0xFF)-IMAGE_MEAN)/IMAGE_STD);
-            }
-        }
-        long endTime = SystemClock.uptimeMillis();
-        Log.d(TAG, "Timecost to put values into ByteBuffer: " + Long.toString(endTime - startTime));
-    }
-
-
 
     //////////////////////////////////////////
     ////////////opencv camera view ///////////
@@ -294,7 +144,6 @@ public class OpenCVCameraActivity extends AppCompatActivity implements  CameraBr
         Core.flip(mRGBA.t() , mRGBAT ,1);
         Imgproc.resize(mRGBAT , mRGBAT , mRGBA.size() );
 
-//        File path = new File(getFilesDir()+"/Pictures/opencv/");
         File path = new File(Environment.getExternalStorageDirectory() + "/Pictures/ThirdEye/");
         path.mkdirs();
 
@@ -303,14 +152,14 @@ public class OpenCVCameraActivity extends AppCompatActivity implements  CameraBr
         File file = new File(path, filename);
         filename = file.toString();
 
-            ///////// comment/uncomment next line to save/not save image-----------########
+        ///////// comment/uncomment next line to save/not save image-----------########
         Imgcodecs.imwrite(filename, mRGBAT);
-//        bool = Imgcodecs.imwrite(filename, mRGBAT);
-//        if( bool == true){
-//            Log.e("Imwrite" , "saved in "+filename );
-//        }else{
-//            Log.e("Imwrite_failed" , "File write FAILED");
-//        }
+        try {
+            // thread to sleep
+            Thread.sleep(200);
+        } catch (Exception e) {
+            System.out.println(e);
+        }
 
         return mRGBAT;
     }
@@ -321,27 +170,62 @@ public class OpenCVCameraActivity extends AppCompatActivity implements  CameraBr
     }
     ////////////opencv camera view ENDED///////////////////////
 
+
     //////////////////////////////////////////
-    ///////// resume or pause app/////////////
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        if(openCVCamView != null){
-            openCVCamView.disableView();
+    /////////background thread for activity classification
+    ////Starts a background thread and its {@link Handler}.
+    private void startBackgroundThread() {
+        backgroundThread = new HandlerThread(HANDLE_THREAD_NAME);
+        backgroundThread.start();
+        backgroundHandler = new Handler(backgroundThread.getLooper());
+        synchronized (lock) {
+            runClassifier = true;
+        }
+        backgroundHandler.post(runBackgroundClassifire);
+    }
+
+    //Stops the background thread and its {@link Handler}. /////
+    private void stopBackgroundThread() {
+        backgroundThread.quitSafely();
+        try {
+            backgroundThread.join();
+            backgroundThread = null;
+            backgroundHandler = null;
+            synchronized (lock) {
+                runClassifier = false;
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
     }
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-        if(openCVCamView != null){
-            openCVCamView.disableView();
-        }
-    }
+    ////classify images from directory in the background. ///////
+    private Runnable runBackgroundClassifire =
+            new Runnable() {
+                @Override
+                public void run() {
+                    synchronized (lock) {
+                        if (runClassifier && classifier == null) {
+                            classifier = new ActivityClassifier(OpenCVCameraActivity.this);
+                            Log.e(TAG, "OpenCV: Background Activity classifier started.");
+                        }else{
+                            //Log.e(TAG, "OpenCV: Background Activity classifier running.");
+                        }
+                    }
+                    backgroundHandler.post(runBackgroundClassifire);
+                }
+            };
+    /////////background thread for activity classification ENDED
+
+
+
+    //////////////////////////////////////////
+    ///////// resume or pause app/////////////
 
     @Override
     protected void onResume() {
         super.onResume();
+        startBackgroundThread();
 
         if (OpenCVLoader.initDebug()) {
 //            Log.e(TAG, "opencv ok");
@@ -355,6 +239,31 @@ public class OpenCVCameraActivity extends AppCompatActivity implements  CameraBr
             requestPermissions(PERMISSIONS, REQUEST_PERMISSIONS);
             return;
         }
-
     }
+
+    @Override
+    protected void onPause() {
+        if(openCVCamView != null){
+            openCVCamView.disableView();
+        }
+
+        stopBackgroundThread();
+        super.onPause();
+    }
+
+    @Override
+    protected void onDestroy() {
+
+        runClassifier =  false;
+        if (classifier != null){
+            classifier.close();
+            classifier=null;
+        }
+
+        if(openCVCamView != null){
+            openCVCamView.disableView();
+        }
+        super.onDestroy();
+    }
+
 }

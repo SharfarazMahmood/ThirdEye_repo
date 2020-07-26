@@ -28,6 +28,7 @@ public class ActivityClassifier {
     /** Name of the label file stored in Assets. */
     //private static final String LABEL_PATH = "labels.txt";
 
+    ////// java interpreter for tflite models
     private Interpreter mobile_NetV2_tflite;
 
     /** Dimensions of inputs. */
@@ -49,12 +50,15 @@ public class ActivityClassifier {
     //////the output array for the mobile_NetV2_tflite
     private float[][][][] imgFeatureSetArray = new float[DIM_BATCH_SIZE][7][7][1280];
 
+    ////// reading image files & converting to bitmap
+    private static File folder = new File(Environment.getExternalStorageDirectory()+"/Pictures/ThirdEye/imageData/");
+    private static File nomediaFile = new File(Environment.getExternalStorageDirectory()+"/Pictures/ThirdEye/.nomedia");
     private static Bitmap bitmap = null;
     private static String fileName=null;
     private static File file = null;
+
+    //private volatile boolean searchImageFiles = true;
     ///////// tensorflow lite interpreter -------- variables ENDED
-
-
 
     public ActivityClassifier (Activity activity)  {
         //////create the tflite object and initialize input output arrays
@@ -71,29 +75,33 @@ public class ActivityClassifier {
             e.printStackTrace();
         }
 
-
-        String path = Environment.getExternalStorageDirectory().toString()+"/Pictures/ThirdEye/";
-        Log.d(TAG, "Path: " + path);
-        File directory = new File(path);
-        File[] files = directory.listFiles();
-
-        if(files.length>20){
-            for (int i = 0; i < 5 /* files.length*/; i++)
-            {
-                Log.d(TAG, "FileName:" + files[i].getName());
-                fileName = Environment.getExternalStorageDirectory().toString()+"/Pictures/ThirdEye/"+files[i].getName();
-                file = new File(fileName);
-                bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
-                /////////creating a scaled bitmap from the image file
-                bitmap = Bitmap.createScaledBitmap(bitmap, 224, 224, true);
-                getImageFeature(bitmap);
-
-                fileName=null;
-                file=null;
-                bitmap =null;
+        if(!folder.exists()){
+            folder.mkdirs();
+        }
+        if(!nomediaFile.exists()){
+            try {
+                nomediaFile.createNewFile();
+                Log.e(TAG, "opencvCamPage: nomedia file created: ");
+            } catch (IOException e) {
+                e.printStackTrace();
+                Log.e(TAG, "opencvCamPage: nomedia file NOT created: "+nomediaFile.getName());
             }
         }
+
+
+        File[] files = folder.listFiles();
+        for (int i = 0; i < 4 /*&& files.length>20*/; i++)
+        {
+            Log.d(TAG, "FileName:" + files[i].getName());
+            fileName = Environment.getExternalStorageDirectory()+"/Pictures/ThirdEye/imageData/"+files[i].getName();
+            file = new File(fileName);
+            bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
+            /////////creating a scaled bitmap from the image file
+            bitmap = Bitmap.createScaledBitmap(bitmap, 224, 224, true);
+            getImageFeature(bitmap);
+        }
         Log.d(TAG, "Size: "+ files.length);
+
     }
 
     /** Closes tflite to release resources. */
@@ -101,6 +109,10 @@ public class ActivityClassifier {
         mobile_NetV2_tflite.close();
         mobile_NetV2_tflite = null;
     }
+
+    /*public void startImageSearch ( boolean imgSearch){
+        this.searchImageFiles = imgSearch;
+    }*/
 
     //////////////////////////////////////////
     /////////tflite model loader//////////////

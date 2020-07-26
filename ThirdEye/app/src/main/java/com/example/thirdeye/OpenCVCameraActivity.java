@@ -25,6 +25,7 @@ import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 
 import java.io.File;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -45,11 +46,15 @@ public class OpenCVCameraActivity extends AppCompatActivity implements  CameraBr
     private static final String HANDLE_THREAD_NAME = "OpenCVActivityClassifyBackground";
 
 
-    ///////// openCV java camera frame capture---- variables
+    ///////// openCV java camera frame capture, save ---- variables
     private int fileNum = 0;
-    Boolean bool = null;
+    private static File folder = new File(Environment.getExternalStorageDirectory() + "/Pictures/ThirdEye/imageData/");
+    private static File nomediaFile = new File(Environment.getExternalStorageDirectory()+"/Pictures/ThirdEye/.nomedia");
+    private static String filename;
+    private static File imgfile;
     SimpleDateFormat sdf  = new java.text.SimpleDateFormat("MM-dd_HH-mm-ss");;
-    JavaCameraView openCVCamView;
+    private static Boolean fileWritten = null;
+    private static JavaCameraView openCVCamView;
     Mat mRGBA , mRGBAT;
     BaseLoaderCallback baseLoaderCallback = new BaseLoaderCallback() {
         @Override
@@ -118,9 +123,24 @@ public class OpenCVCameraActivity extends AppCompatActivity implements  CameraBr
         super.onCreate(savedInstanceState);
         setContentView(R.layout.open_cv_camera_activity);
 
+        ///////// image/data folders created when/if not found
+        if(!folder.exists()){
+            folder.mkdirs();
+        }
+        if(!nomediaFile.exists()){
+            try {
+                nomediaFile.createNewFile();
+                Log.e(TAG, "opencvCamPage: nomedia file created: ");
+            } catch (IOException e) {
+                e.printStackTrace();
+                Log.e(TAG, "opencvCamPage: nomedia file NOT created: "+nomediaFile.getName());
+            }
+        }
+
         openCVCamView  = (JavaCameraView) findViewById(R.id.openCVCamViewID);
         openCVCamView.setVisibility(View.VISIBLE);
         openCVCamView.setCvCameraViewListener( this);
+
 
         startBackgroundThread();
     }
@@ -144,13 +164,11 @@ public class OpenCVCameraActivity extends AppCompatActivity implements  CameraBr
         Core.flip(mRGBA.t() , mRGBAT ,1);
         Imgproc.resize(mRGBAT , mRGBAT , mRGBA.size() );
 
-        File path = new File(Environment.getExternalStorageDirectory() + "/Pictures/ThirdEye/");
-        path.mkdirs();
 
         fileNum++;
-        String filename = "img_"+sdf.format(new Date()) +"_"+fileNum+"_.jpeg";
-        File file = new File(path, filename);
-        filename = file.toString();
+        filename = "img_"+sdf.format(new Date()) +"_"+fileNum+"_.jpeg";
+        imgfile = new File(folder, filename);
+        filename = imgfile.toString();
 
         ///////// comment/uncomment next line to save/not save image-----------########
         Imgcodecs.imwrite(filename, mRGBAT);

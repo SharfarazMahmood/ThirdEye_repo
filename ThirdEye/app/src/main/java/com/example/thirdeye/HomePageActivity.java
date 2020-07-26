@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
@@ -17,13 +18,20 @@ import android.widget.TextView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+import java.io.File;
+import java.io.IOException;
+
 public class HomePageActivity extends AppCompatActivity implements View.OnClickListener {
+    private static final String TAG = "HomePageActivity";
 
     private CardView profileCardView, cameraCardView, activityListCardView, notificationsCardView, settingsCardView, signOutCardView ;
     TextView currentUserEmailTextView;
 
     private FirebaseAuth mAuth;
     private FirebaseUser mUser;
+
+    private static File folder = new File(Environment.getExternalStorageDirectory()+"/Pictures/ThirdEye/");
+    private static File nomediaFile = new File(Environment.getExternalStorageDirectory()+"/Pictures/ThirdEye/.nomedia");
 
 
     ///////Checking?Asking for permission------------------
@@ -73,25 +81,41 @@ public class HomePageActivity extends AppCompatActivity implements View.OnClickL
         super.onCreate(savedInstanceState);
         setContentView(R.layout.home_page_activity);
 
+        ///////// image and data folder create when/if not found
+        if(!folder.exists()){
+            folder.mkdirs();
+            Log.e(TAG, "Homepage: folder created: "+folder.getName());
+        }
+        if(!nomediaFile.exists()){
+            try {
+                nomediaFile.createNewFile();
+                Log.e(TAG, "Homepage: nomedia file created: ");
+            } catch (IOException e) {
+                e.printStackTrace();
+                Log.e(TAG, "Homepage: nomedia file NOT created: "+nomediaFile.getName());
+            }
+        }
+
         {////////// homepage cardview
-            mAuth = FirebaseAuth.getInstance();
-            mUser = mAuth.getCurrentUser();
+        mAuth = FirebaseAuth.getInstance();
+        mUser = mAuth.getCurrentUser();
 
-            profileCardView = findViewById(R.id.profileCardViewId);
-            cameraCardView = findViewById(R.id.cameraCardViewId);
-            activityListCardView = findViewById(R.id.activityListCardViewId);
-            notificationsCardView = findViewById(R.id.notificationsCardViewId);
-            settingsCardView  = findViewById(R.id.settingsCardViewId);
-            signOutCardView  = findViewById(R.id.signOutCardViewID);
-            currentUserEmailTextView = findViewById(R.id.currentUserEmailTextViewId);
 
-            profileCardView.setOnClickListener(this); ;
-            cameraCardView.setOnClickListener(this);
-            activityListCardView.setOnClickListener(this);
-            notificationsCardView.setOnClickListener(this);
-            settingsCardView.setOnClickListener(this);
-            signOutCardView.setOnClickListener(this);
-            currentUserEmailTextView.setText(mUser.getEmail());
+        profileCardView = findViewById(R.id.profileCardViewId);
+        cameraCardView = findViewById(R.id.cameraCardViewId);
+        activityListCardView = findViewById(R.id.activityListCardViewId);
+        notificationsCardView = findViewById(R.id.notificationsCardViewId);
+        settingsCardView  = findViewById(R.id.settingsCardViewId);
+        signOutCardView  = findViewById(R.id.signOutCardViewID);
+        currentUserEmailTextView = findViewById(R.id.currentUserEmailTextViewId);
+
+        profileCardView.setOnClickListener(this);
+        cameraCardView.setOnClickListener(this);
+        activityListCardView.setOnClickListener(this);
+        notificationsCardView.setOnClickListener(this);
+        settingsCardView.setOnClickListener(this);
+        signOutCardView.setOnClickListener(this);
+        currentUserEmailTextView.setText(mUser.getEmail());
         }
     }
 

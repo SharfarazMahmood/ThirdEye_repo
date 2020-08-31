@@ -1,0 +1,13 @@
+Checking Fridge
+Closing Door
+Drinking Water
+Hand WIpe
+Hand Wash
+Opening Door
+Phone Charging
+Putting Into Fridge
+Reading
+Taking From Fridge
+Taking Medicine
+Tooth Brush
+Using Oven

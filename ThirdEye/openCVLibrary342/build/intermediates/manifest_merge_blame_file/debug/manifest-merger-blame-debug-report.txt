@@ -6,8 +6,8 @@
 6
 7    <uses-sdk
 8        android:minSdkVersion="8"
-8-->E:\Study\GitHub\ThirdEye_repo\ThirdEye\openCVLibrary342\src\main\AndroidManifest.xml
+8-->D:\Study\GitHub\ThirdEye_repo\ThirdEye\openCVLibrary342\src\main\AndroidManifest.xml
 9        android:targetSdkVersion="30" />
-9-->E:\Study\GitHub\ThirdEye_repo\ThirdEye\openCVLibrary342\src\main\AndroidManifest.xml
+9-->D:\Study\GitHub\ThirdEye_repo\ThirdEye\openCVLibrary342\src\main\AndroidManifest.xml
 10
 11</manifest>

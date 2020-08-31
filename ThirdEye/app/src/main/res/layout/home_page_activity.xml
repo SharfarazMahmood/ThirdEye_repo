@@ -12,6 +12,23 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <LinearLayout
+            android:visibility="gone"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ProgressBar
+                android:id="@+id/progressBarId"
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+                android:layout_margin="10dp"
+                android:visibility="invisible"
+                tools:visibility="visible"/>
+
+        </LinearLayout>
+
         <RelativeLayout
             android:layout_marginTop="20dp"
             android:layout_marginRight="20dp"
@@ -48,6 +65,28 @@
 
         </RelativeLayout>
 
+        <LinearLayout
+            android:gravity="center"
+            android:visibility="visible"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <Button
+                android:id="@+id/button_start_threadId"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="startThread"
+                android:text="Start"/>
+            <Button
+                android:visibility="gone"
+                android:id="@+id/button_stop_threadId"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="stopThread"
+                android:text="Stop"/>
+
+        </LinearLayout>
 
         <GridLayout
             android:columnCount="2"

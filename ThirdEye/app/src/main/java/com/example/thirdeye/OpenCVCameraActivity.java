@@ -9,10 +9,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
-import android.os.Handler;
-import android.os.HandlerThread;
-import android.util.Log;
 import android.view.View;
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.CameraBridgeViewBase;
@@ -25,35 +21,17 @@ import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 
 import java.io.File;
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class OpenCVCameraActivity extends AppCompatActivity implements  CameraBridgeViewBase.CvCameraViewListener2{
     private static String TAG = "OpenCVCameraActivity";
 
-    ////// activity classifire variable
-    private final Object lock = new Object();
-    //    private boolean runClassifier = false;
-    private boolean runClassifier = false;
-    private ActivityClassifier classifier = null;
-    //private static boolean classifierCreated = false;
-
-    /** An additional thread for running tasks that shouldn't block the UI. */
-    private HandlerThread backgroundThread;
-    /** A {@link Handler} for running tasks in the background. */
-    private Handler backgroundHandler;
-    private static final String HANDLE_THREAD_NAME = "OpenCVActivityClassifyBackground";
-
 
     ///////// openCV java camera frame capture, save ---- variables
     private int fileNum = 0;
-    private static File folder = new File(Environment.getExternalStorageDirectory() + "/Pictures/ThirdEye/imageData/");
-    private static File nomediaFile = new File(Environment.getExternalStorageDirectory()+"/Pictures/ThirdEye/.nomedia");
-    private static String filename;
-    private static File imgfile;
+
     SimpleDateFormat sdf  = new java.text.SimpleDateFormat("MM-dd_HH-mm-ss");;
-    private static Boolean fileWritten = null;
     private static JavaCameraView openCVCamView;
     Mat mRGBA , mRGBAT;
     BaseLoaderCallback baseLoaderCallback = new BaseLoaderCallback() {
@@ -76,7 +54,7 @@ public class OpenCVCameraActivity extends AppCompatActivity implements  CameraBr
     ///////// openCV java camera frame capture---- variables ENDED
 
     //////////////////////////////////////////////////////////////
-    ///////Checking?Asking for camera permission------------------
+    ///////Checking?Asking for permission------------------
     private static final String[] PERMISSIONS = {
             Manifest.permission.CAMERA,
             Manifest.permission.WRITE_EXTERNAL_STORAGE,
@@ -115,7 +93,9 @@ public class OpenCVCameraActivity extends AppCompatActivity implements  CameraBr
             }
         }
     }
-    ///////Checking?Asking for camera permission ENDED------------------
+    ///////Checking/Asking for permission ENDED------------------
+
+
 
 
     @Override
@@ -124,25 +104,15 @@ public class OpenCVCameraActivity extends AppCompatActivity implements  CameraBr
         setContentView(R.layout.open_cv_camera_activity);
 
         ///////// image/data folders created when/if not found
+        File folder = new File(this.getExternalFilesDir(null) + "/imageData/");
         if(!folder.exists()){
             folder.mkdirs();
-        }
-        if(!nomediaFile.exists()){
-            try {
-                nomediaFile.createNewFile();
-                Log.e(TAG, "opencvCamPage: nomedia file created: ");
-            } catch (IOException e) {
-                e.printStackTrace();
-                Log.e(TAG, "opencvCamPage: nomedia file NOT created: "+nomediaFile.getName());
-            }
         }
 
         openCVCamView  = (JavaCameraView) findViewById(R.id.openCVCamViewID);
         openCVCamView.setVisibility(View.VISIBLE);
         openCVCamView.setCvCameraViewListener( this);
 
-
-        startBackgroundThread();
     }
 
     //////////////////////////////////////////
@@ -159,22 +129,29 @@ public class OpenCVCameraActivity extends AppCompatActivity implements  CameraBr
 
     @Override
     public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
+
         mRGBA = inputFrame.gray();
         mRGBAT = mRGBA.t();
         Core.flip(mRGBA.t() , mRGBAT ,1);
         Imgproc.resize(mRGBAT , mRGBAT , mRGBA.size() );
 
+        File folder = new File(this.getExternalFilesDir(null) + "/imageData/");
+        if(!folder.exists()){
+            folder.mkdirs();
+        }
 
         fileNum++;
-        filename = "img_"+sdf.format(new Date()) +"_"+fileNum+"_.jpeg";
-        imgfile = new File(folder, filename);
+        String st = String.format("%06d",fileNum); /////a 6 digit long file number to keep the sequence correctly
+        String filename = "img_"+sdf.format(new Date()) +"_"+st+"_.jpeg";
+        File imgfile = new File(folder, filename);
         filename = imgfile.toString();
 
         ///////// comment/uncomment next line to save/not save image-----------########
         Imgcodecs.imwrite(filename, mRGBAT);
+
         try {
             // thread to sleep
-            Thread.sleep(200);
+            Thread.sleep(250);
         } catch (Exception e) {
             System.out.println(e);
         }
@@ -190,60 +167,10 @@ public class OpenCVCameraActivity extends AppCompatActivity implements  CameraBr
 
 
     //////////////////////////////////////////
-    /////////background thread for activity classification
-    ////Starts a background thread and its {@link Handler}.
-    private void startBackgroundThread() {
-        backgroundThread = new HandlerThread(HANDLE_THREAD_NAME);
-        backgroundThread.start();
-        backgroundHandler = new Handler(backgroundThread.getLooper());
-        synchronized (lock) {
-            runClassifier = true;
-        }
-        backgroundHandler.post(runBackgroundClassifire);
-    }
-
-    //Stops the background thread and its {@link Handler}. /////
-    private void stopBackgroundThread() {
-        backgroundThread.quitSafely();
-        try {
-            backgroundThread.join();
-            backgroundThread = null;
-            backgroundHandler = null;
-            synchronized (lock) {
-                runClassifier = false;
-            }
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
-
-    ////classify images from directory in the background. ///////
-    private Runnable runBackgroundClassifire =
-            new Runnable() {
-                @Override
-                public void run() {
-                    synchronized (lock) {
-                        if (runClassifier && classifier == null) {
-                            classifier = new ActivityClassifier(OpenCVCameraActivity.this);
-                            Log.e(TAG, "OpenCV: Background Activity classifier started.");
-                        }else{
-                            //Log.e(TAG, "OpenCV: Background Activity classifier running.");
-                        }
-                    }
-                    backgroundHandler.post(runBackgroundClassifire);
-                }
-            };
-    /////////background thread for activity classification ENDED
-
-
-
-    //////////////////////////////////////////
     ///////// resume or pause app/////////////
-
     @Override
     protected void onResume() {
         super.onResume();
-        startBackgroundThread();
 
         if (OpenCVLoader.initDebug()) {
 //            Log.e(TAG, "opencv ok");
@@ -264,20 +191,11 @@ public class OpenCVCameraActivity extends AppCompatActivity implements  CameraBr
         if(openCVCamView != null){
             openCVCamView.disableView();
         }
-
-        stopBackgroundThread();
         super.onPause();
     }
 
     @Override
     protected void onDestroy() {
-
-        runClassifier =  false;
-        if (classifier != null){
-            classifier.close();
-            classifier=null;
-        }
-
         if(openCVCamView != null){
             openCVCamView.disableView();
         }

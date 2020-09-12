@@ -95,6 +95,7 @@
             android:layout_height="wrap_content"
             android:text="@string/already_signed_up_text"
             android:textSize="18sp"
+            android:textColor="#25AEDB"
             android:layout_gravity="center"
             />
 

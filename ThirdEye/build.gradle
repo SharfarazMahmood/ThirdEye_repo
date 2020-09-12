@@ -6,8 +6,6 @@ buildscript {
     }
     dependencies {
         classpath "com.android.tools.build:gradle:4.0.0"
-
-        ///firebase related
         classpath 'com.google.gms:google-services:4.3.3'
 
 
@@ -20,6 +18,8 @@ allprojects {
     repositories {
         google()
         jcenter()
+
+        maven { url 'https://maven.google.com/' }
     }
 }
 

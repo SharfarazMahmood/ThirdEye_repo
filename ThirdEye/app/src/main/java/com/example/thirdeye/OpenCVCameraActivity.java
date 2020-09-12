@@ -27,11 +27,12 @@ import java.util.Date;
 public class OpenCVCameraActivity extends AppCompatActivity implements  CameraBridgeViewBase.CvCameraViewListener2{
     private static String TAG = "OpenCVCameraActivity";
 
+    ///////// tensorflow lite interpreter -------- variables
 
     ///////// openCV java camera frame capture, save ---- variables
     private int fileNum = 0;
 
-    SimpleDateFormat sdf  = new java.text.SimpleDateFormat("MM-dd_HH-mm-ss");;
+    SimpleDateFormat sdf  = new SimpleDateFormat("dd-MM_HH:mm");
     private static JavaCameraView openCVCamView;
     Mat mRGBA , mRGBAT;
     BaseLoaderCallback baseLoaderCallback = new BaseLoaderCallback() {
@@ -62,6 +63,7 @@ public class OpenCVCameraActivity extends AppCompatActivity implements  CameraBr
     };
     private static final int PERMISSIONS_COUNT = 3; //////////////should be equal to num of permissions
     private static final int REQUEST_PERMISSIONS = 39;  //////this is a request code
+
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     private boolean arePermisionsDenied(){
@@ -96,8 +98,6 @@ public class OpenCVCameraActivity extends AppCompatActivity implements  CameraBr
     ///////Checking/Asking for permission ENDED------------------
 
 
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -111,7 +111,8 @@ public class OpenCVCameraActivity extends AppCompatActivity implements  CameraBr
 
         openCVCamView  = (JavaCameraView) findViewById(R.id.openCVCamViewID);
         openCVCamView.setVisibility(View.VISIBLE);
-        openCVCamView.setCvCameraViewListener( this);
+        openCVCamView.setCvCameraViewListener(this);
+//        openCVCamView.setMaxFrameSize( 512,  512);
 
     }
 
@@ -142,7 +143,7 @@ public class OpenCVCameraActivity extends AppCompatActivity implements  CameraBr
 
         fileNum++;
         String st = String.format("%06d",fileNum); /////a 6 digit long file number to keep the sequence correctly
-        String filename = "img_"+sdf.format(new Date()) +"_"+st+"_.jpeg";
+        String filename = "img_"+ sdf.format(new Date()) +"_"+st+"_.jpeg";
         File imgfile = new File(folder, filename);
         filename = imgfile.toString();
 
@@ -150,7 +151,6 @@ public class OpenCVCameraActivity extends AppCompatActivity implements  CameraBr
         Imgcodecs.imwrite(filename, mRGBAT);
 
         try {
-            // thread to sleep
             Thread.sleep(250);
         } catch (Exception e) {
             System.out.println(e);
@@ -160,29 +160,25 @@ public class OpenCVCameraActivity extends AppCompatActivity implements  CameraBr
     }
 
     @Override
-    public void onPointerCaptureChanged(boolean hasCapture) {
-
-    }
+    public void onPointerCaptureChanged(boolean hasCapture) { }
     ////////////opencv camera view ENDED///////////////////////
 
 
     //////////////////////////////////////////
     ///////// resume or pause app/////////////
+
     @Override
     protected void onResume() {
         super.onResume();
 
         if (OpenCVLoader.initDebug()) {
-//            Log.e(TAG, "opencv ok");
             baseLoaderCallback.onManagerConnected(BaseLoaderCallback.SUCCESS);
         } else {
-//            Log.e(TAG, "opencv NOT ok");
             OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION, this, baseLoaderCallback);
         }
 
         if( Build.VERSION.SDK_INT >= Build.VERSION_CODES.M   &&   arePermisionsDenied() ){
             requestPermissions(PERMISSIONS, REQUEST_PERMISSIONS);
-            return;
         }
     }
 
@@ -201,5 +197,6 @@ public class OpenCVCameraActivity extends AppCompatActivity implements  CameraBr
         }
         super.onDestroy();
     }
+
 
 }

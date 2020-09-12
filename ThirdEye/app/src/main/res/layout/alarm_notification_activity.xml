@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/backgroundMainColor"
+    android:orientation="horizontal"
+    tools:context=".AlarmNotificationActivity">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="8dp">
+
+                        <ImageButton
+                            android:visibility="gone"
+                            android:id="@+id/reload_button_id"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:src="@drawable/ic_baseline_autorenew_24"
+                            android:layout_alignParentEnd="true"
+                            android:clickable="true"
+                            android:onClick="loadActivitiList"
+                            android:focusable="true" />
+
+                        <TextView
+                            android:id="@+id/alarm_activity_textView_id"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentStart="true"
+                            android:text="@string/notifications_list"
+                            android:maxLines="1"
+                            android:textSize="28sp"
+                            android:ellipsize="end"
+                            android:textColor="@color/colorAccent"/>
+
+                </RelativeLayout>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recyclerViewId"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:padding="4dp"
+                    tools:listitem="@layout/alarm_list_item"
+                    android:scrollbars="vertical" />
+        </LinearLayout>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -63,7 +63,6 @@
             />
 
         <EditText
-            android:layout_marginTop="20dp"
             android:layout_marginRight="20dp"
             android:layout_marginLeft="20dp"
             android:layout_width="match_parent"
@@ -88,12 +87,13 @@
             />
 
         <TextView
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="10dp"
             android:id="@+id/haveNotSignedUpTextId"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/have_not_signed_up_text"
             android:textSize="18sp"
+            android:textColor="#25AEDB"
             android:layout_gravity="center"
             />
 

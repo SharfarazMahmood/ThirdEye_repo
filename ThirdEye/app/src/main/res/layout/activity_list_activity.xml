@@ -1,43 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     android:background="@color/backgroundMainColor"
     tools:context=".ActivityListActivity">
 
-    <LinearLayout
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="8dp">
 
-        <Button
-            android:id="@+id/Activity_list_Load_ButtonID"
+        <TextView
+            android:id="@+id/alarm_activity_textView_id"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:onClick="loadActivitiList"
-            android:text="Load" />
+            android:layout_alignParentStart="true"
+            android:text="@string/detected_activities"
+            android:maxLines="1"
+            android:textSize="28sp"
+            android:ellipsize="end"
+            android:textColor="@color/colorAccent"/>
 
+    </RelativeLayout>
 
-        <ScrollView
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/activity_List_Text_viewId"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_margin="20dp"
+            android:layout_marginTop="20dp"
+            android:text="@string/activity_list"
+            android:textColor="@android:color/secondary_text_light"
+            android:textSize="18sp" />
+    </ScrollView>
 
-            <TextView
-                android:id="@+id/activity_List_Text_viewId"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_margin="20dp"
-                android:layout_marginTop="20dp"
-                android:text="@string/activity_list"
-                android:textColor="@android:color/secondary_text_light"
-
-                android:textSize="18sp" />
-        </ScrollView>
-
-    </LinearLayout>
-
-</RelativeLayout>
+</LinearLayout>

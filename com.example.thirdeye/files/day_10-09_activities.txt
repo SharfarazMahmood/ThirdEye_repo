@@ -1,0 +1,6 @@
+Taking Medicine,01:06
+Taking Medicine,09:06
+Taking Medicine,13:10
+Hand WIpe,21:11
+Taking Medicine,21:11
+Drinking Water,23:00

@@ -1,0 +1,12 @@
+Taking Medicine,01:03
+Drinking Water,01:01
+Reading,00:58
+Drinking Water,03:00
+Hand WIpe,03:03
+Drinking Water,04:20
+Taking Medicine,08:04
+Taking Medicine,08:56
+Reading,22:49
+Reading,22:49
+Taking Medicine,22:49
+Taking Medicine,22:53

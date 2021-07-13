@@ -1,0 +1,18 @@
+Reading,00:00,0,1
+Taking Medicine,00:00,0,1
+Taking Medicine,01:00,0,1
+Drinking Water,01:00,0,1
+Reading,01:00,0,1
+Drinking Water,03:00,0,1
+Hand WIpe,03:00,0,1
+Drinking Water,04:00,0,1
+Taking Medicine,08:00,0,1
+Taking Medicine,09:00,0,1
+Reading,11:00,0,1
+Hand Wash,11:00,0,1
+Taking Medicine,13:00,0,0
+Taking Medicine,21:00,0,0
+Hand WIpe,21:00,0,0
+Reading,22:00,0,0
+Taking Medicine,22:00,0,0
+Drinking Water,23:00,0,0

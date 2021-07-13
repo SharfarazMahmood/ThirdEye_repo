@@ -1,0 +1,15 @@
+Opening Door,01:01
+Drinking Water,01:01
+Taking Medicine,01:01
+Drinking Water,01:01
+Hand WIpe,01:01
+Hand WIpe,01:01
+Closing Door,01:01
+Reading,01:01
+Reading,01:29
+Taking Medicine,01:29
+Drinking Water,01:29
+Drinking Water,03:20
+Drinking Water,03:20
+Hand WIpe,03:20
+Drinking Water,03:20

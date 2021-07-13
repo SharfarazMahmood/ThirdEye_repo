@@ -13,6 +13,17 @@
         android:layout_height="wrap_content"
         android:padding="8dp">
 
+        <ImageButton
+            android:visibility="visible"
+            android:id="@+id/reload_button_id"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_baseline_autorenew_24"
+            android:layout_alignParentEnd="true"
+            android:clickable="true"
+            android:onClick="loadActivitiList"
+            android:focusable="true" />
+
         <TextView
             android:id="@+id/alarm_activity_textView_id"
             android:layout_width="wrap_content"
@@ -37,7 +48,6 @@
             android:layout_gravity="center_horizontal"
             android:layout_margin="20dp"
             android:layout_marginTop="20dp"
-            android:text="@string/activity_list"
             android:textColor="@android:color/secondary_text_light"
             android:textSize="18sp" />
     </ScrollView>
